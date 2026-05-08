@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Projects</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="dashboard-page">
+    <div class="container-fluid">
+        <div class="top-navbar">
+            <div class="brand">DASHBOARD</div>
+            <div class="nav-actions">
+                <a href="/edit_profile" class="nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Profile
+                </a>
+                <button id="logoutBtn" class="logout-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1>Projects</h1>
+            <a href="/create_project" class="btn-create-modern">New Project</a>
+        </div>
+
+        <div class="filter-tabs">
+            <button id="filter-all" class="filter-btn active" onclick="setFilter('all')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                All projects
+            </button>
+            <button id="filter-owner" class="filter-btn" onclick="setFilter('owner')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                Created by me
+            </button>
+            <button id="filter-shared" class="filter-btn" onclick="setFilter('shared')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Shared with me
+            </button>
+        </div>
+
+        <div class="projects-grid" id="projectList"></div>
+    </div>
+
+    <!-- Custom Delete Modal -->
+    <div id="deleteModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <svg class="modal-icon-lg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <h3>Delete Project?</h3>
+            <p>Are you sure you want to permanently delete this project? This action cannot be undone.</p>
+            <div class="modal-actions modal-actions-wide">
+                <button id="cancelDeleteBtn" class="modal-btn-cancel modal-action-btn">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn-card-delete modal-action-btn dashboard-delete-btn">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="custom-modal">
+        <div class="custom-modal-content modal-form-content">
+            <h3 class="modal-form-title">Quick Edit</h3>
+            <input type="hidden" id="editProjectId">
+            <div class="modal-field">
+                <label class="modal-label">Name:</label>
+                <input type="text" id="editProjectName" class="modal-input">
+            </div>
+            <div class="modal-field modal-field-large">
+                <label class="modal-label">Description:</label>
+                <textarea id="editProjectDesc" class="modal-textarea"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button id="saveEditBtn" class="modal-save-btn">Save Changes</button>
+                <button id="cancelEditBtn" class="modal-btn-cancel modal-action-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/sessions', { method: 'DELETE' });
+            window.location.href = '/login';
+        });
+
+        let allProjects = [];
+        let currentFilter = 'all';
+        let projectToDelete = null; 
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('/projects');
+                allProjects = await response.json();
+                renderProjects();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('filter-' + filter).classList.add('active');
+            renderProjects();
+        }
+
+        function renderProjects() {
+            const list = document.getElementById('projectList');
+            list.innerHTML = '';
+            
+            const filtered = allProjects.filter(p => currentFilter === 'all' || p.relation === currentFilter);
+            
+            if(filtered.length === 0) {
+                list.innerHTML = '<p class="empty-grid-message">No projects found in this category.</p>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                const isOwner = p.user_role === 'owner';
+                const isAdmin = p.user_role === 'admin';
+                
+                let actionsHtml = '<div></div>';
+                
+                if (isOwner || isAdmin) {
+                    const deleteBtn = isOwner ? `
+                        <button class="btn-card-delete" title="Delete Project" onclick="triggerDelete(event, ${p.id})">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    ` : '';
+
+                    actionsHtml = `
+                        <div class="card-actions">
+                            <button class="btn-card-edit" title="Edit Name/Desc" onclick="openEditModal(event, ${p.id}, '${p.name.replace(/'/g, "\\'")}', '${p.description ? p.description.replace(/'/g, "\\'") : ''}')">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
+                            ${deleteBtn}
+                        </div>
+                    `;
+                }
+
+                const descText = p.description ? p.description : '<span class="muted-italic">No description provided.</span>';
+
+                list.innerHTML += `
+                <div class="project-card" onclick="window.location.href='/project?id=${p.id}'">
+                    <div class="card-header">
+                        <h3>${p.name}</h3>
+                        <p>
+                            <svg class="icon-inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> 
+                            ${p.creator_email}
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        ${descText}
+                    </div>
+                    <div class="card-footer" onclick="event.stopPropagation()">
+                        <div class="card-stats">
+                            <span title="Members">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> 
+                                ${p.member_count}
+                            </span>
+                            <span title="Discussions">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg> 
+                                ${p.discussion_count}
+                            </span>
+                        </div>
+                        ${actionsHtml}
+                    </div>
+                </div>
+                `;
+            });
+        }
+
+        function triggerDelete(e, id) {
+            e.stopPropagation(); 
+            projectToDelete = id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+            document.getElementById('deleteModal').style.display = 'none';
+            projectToDelete = null;
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (projectToDelete) {
+                await fetch(`/projects/${projectToDelete}`, { method: 'DELETE' });
+                document.getElementById('deleteModal').style.display = 'none';
+                loadProjects();
+            }
+        });
+
+        const editModal = document.getElementById('editModal');
+        
+        function openEditModal(e, id, name, desc) {
+            e.stopPropagation(); 
+            document.getElementById('editProjectId').value = id;
+            document.getElementById('editProjectName').value = name;
+            document.getElementById('editProjectDesc').value = desc;
+            editModal.style.display = 'flex';
+        }
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            editModal.style.display = 'none';
+        });
+
+        document.getElementById('saveEditBtn').addEventListener('click', async () => {
+            const id = document.getElementById('editProjectId').value;
+            const newName = document.getElementById('editProjectName').value;
+            const newDesc = document.getElementById('editProjectDesc').value;
+
+            if(!newName || !newDesc) return;
+
+            await fetch(`/projects/${id}`, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, description: newDesc })
+            });
+            
+            editModal.style.display = 'none';
+            loadProjects();
+        });
+
+        loadProjects();
+    </script>
+</body>
+</html>

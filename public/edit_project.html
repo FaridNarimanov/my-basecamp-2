@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Project</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="edit-project-page">
+    <div class="edit-container">
+        <div class="top-navbar">
+            <a href="/dashboard">← Back to Dashboard</a>
+
+            <div class="nav-right">
+                <a href="/edit_profile">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profile
+                </a>
+
+                <button id="logoutBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="edit-header">
+            <h1>Settings</h1>
+            <small>Created by: <a id="creatorLink" href="#" class="creator-link">Loading...</a></small>
+        </div>
+
+        <div class="grid-layout">
+            <div class="left-panel">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Project Name</label>
+                        <input type="text" id="editName">
+                    </div>
+                    <button id="updateNameBtn" class="update-btn">Update</button>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Description</label>
+                        <textarea id="editDesc"></textarea>
+                    </div>
+                    <button id="updateDescBtn" class="update-btn">Update</button>
+                </div>
+
+                <div class="member-form-row">
+                    <div class="input-group">
+                        <label>Add Member (Username)</label>
+                        <input type="text" id="memberUsername" placeholder="Enter exact username">
+                    </div>
+
+                    <div class="member-actions">
+                        <label class="switch">
+                            <input type="checkbox" id="isAdminToggle">
+                            <span class="slider"></span>
+                        </label>
+
+                        <span class="admin-label">Admin</span>
+
+                        <button id="addMemberBtn" class="add-member-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                            Add Member
+                        </button>
+                    </div>
+                </div>
+
+                <div class="member-list-container">
+                    <h3>Current Members</h3>
+                    <div id="editMembersList">
+                        <p class="empty-message">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <a id="overviewLink" href="#" class="overview-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    Project Overview
+                </a>
+
+                <button id="deleteProjectBtn" class="delete-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Delete Project
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <svg id="confirmIcon" class="modal-icon" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+
+            <h3 id="confirmTitle">Confirm Action</h3>
+            <p id="confirmMessage">Are you sure?</p>
+
+            <div class="modal-actions">
+                <button id="cancelConfirmBtn" class="filter-btn modal-action-btn">Cancel</button>
+                <button id="executeConfirmBtn" class="modal-danger-btn">Yes, Do it</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customAlertModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <svg id="alertIcon" class="modal-icon" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+
+            <h3 id="alertTitle">Alert</h3>
+            <p id="alertMessage">Message goes here.</p>
+
+            <button id="closeAlertBtn" class="modal-primary-btn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+        let currentConfirmAction = null;
+
+        function showCustomAlert(message, type = 'success', callback = null) {
+            const modal = document.getElementById('customAlertModal');
+            const msgEl = document.getElementById('alertMessage');
+            const iconEl = document.getElementById('alertIcon');
+            const titleEl = document.getElementById('alertTitle');
+            const btn = document.getElementById('closeAlertBtn');
+
+            msgEl.textContent = message;
+            btn.classList.remove('alert-btn-error', 'alert-btn-warning', 'alert-btn-success');
+
+            if (type === 'error') {
+                titleEl.textContent = 'Error';
+                iconEl.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+                iconEl.setAttribute('stroke', 'var(--danger)');
+                btn.classList.add('alert-btn-error');
+            } else if (type === 'warning') {
+                titleEl.textContent = 'Warning';
+                iconEl.innerHTML = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>';
+                iconEl.setAttribute('stroke', 'var(--warning)');
+                btn.classList.add('alert-btn-warning');
+            } else {
+                titleEl.textContent = 'Success';
+                iconEl.innerHTML = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>';
+                iconEl.setAttribute('stroke', 'var(--success)');
+                btn.classList.add('alert-btn-success');
+            }
+
+            modal.style.display = 'flex';
+
+            btn.onclick = () => {
+                modal.style.display = 'none';
+                if (callback) callback();
+            };
+        }
+
+        function showCustomConfirm(title, message, executeFunction) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            currentConfirmAction = executeFunction;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
+            document.getElementById('confirmModal').style.display = 'none';
+            currentConfirmAction = null;
+        });
+
+        document.getElementById('executeConfirmBtn').addEventListener('click', () => {
+            document.getElementById('confirmModal').style.display = 'none';
+            if (currentConfirmAction) currentConfirmAction();
+        });
+
+        async function init() {
+            if (!projectId) return window.location.href = '/dashboard';
+
+            document.getElementById('overviewLink').href = `/project?id=${projectId}`;
+
+            try {
+                const res = await fetch(`/projects/${projectId}/details`);
+                if (!res.ok) throw new Error();
+
+                const project = await res.json();
+
+                document.getElementById('editName').value = project.name;
+                document.getElementById('editDesc').value = project.description || '';
+
+                const creatorLink = document.getElementById('creatorLink');
+
+                if (project.creator_username) {
+                    creatorLink.innerText = project.creator_username;
+                    creatorLink.href = `/user_profile?username=${project.creator_username}`;
+                } else {
+                    creatorLink.innerText = project.creator_email;
+                    creatorLink.classList.add('creator-link-muted');
+                }
+
+                loadEditMembers();
+            } catch (error) {
+                showCustomAlert("Project not found.", "error", () => {
+                    window.location.href = '/dashboard';
+                });
+            }
+        }
+
+        async function loadEditMembers() {
+            const response = await fetch(`/projects/${projectId}/members`);
+            const members = await response.json();
+            const list = document.getElementById('editMembersList');
+
+            const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2JkYzNjNyI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';
+
+            list.innerHTML = members.map(m => {
+                let roleClass = 'role-viewer';
+
+                if (m.role === 'Owner') roleClass = 'role-owner';
+                else if (m.role === 'admin') roleClass = 'role-admin';
+
+                const displayName = m.username ? m.username : m.name;
+                const avatarSrc = m.profile_pic ? m.profile_pic : defaultAvatar;
+
+                let actionBtnsHtml = '';
+
+                if (m.role !== 'Owner') {
+                    const roleActionText = m.role === 'admin' ? 'Make Viewer' : 'Make Admin';
+                    const nextRole = m.role === 'admin' ? 'viewer' : 'admin';
+                    const roleBtnClass = m.role === 'admin' ? 'is-viewer-target' : 'is-admin-target';
+
+                    actionBtnsHtml = `
+                        <div class="member-action-buttons">
+                            <button onclick="toggleMemberRole('${m.username}', '${nextRole}')" class="member-role-button ${roleBtnClass}">${roleActionText}</button>
+                            <button onclick="confirmRemoveMember('${m.username}')" class="member-remove-button">Remove</button>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="member-item-edit">
+                        <div class="member-identity">
+                            <img src="${avatarSrc}" alt="Avatar" class="avatar-small">
+
+                            <div class="member-text-stack">
+                                <span class="member-display-name">${displayName}</span>
+                                <span class="role-badge ${roleClass}">${m.role}</span>
+                            </div>
+                        </div>
+
+                        ${actionBtnsHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleMemberRole(username, newRole) {
+            const actionText = newRole === 'admin' ? 'promote to Admin' : 'demote to Viewer';
+
+            showCustomConfirm('Change Role?', `Are you sure you want to ${actionText} @${username}?`, async () => {
+                const res = await fetch(`/projects/${projectId}/members/${username}/role`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role: newRole })
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    showCustomAlert(result.message, 'success');
+                    loadEditMembers();
+                } else {
+                    showCustomAlert(result.message, 'error');
+                }
+            });
+        }
+
+        function confirmRemoveMember(username) {
+            showCustomConfirm('Remove Member?', `Are you sure you want to remove @${username} from this project?`, async () => {
+                const res = await fetch(`/projects/${projectId}/members/${username}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    showCustomAlert(result.message, 'success');
+                    loadEditMembers();
+                } else {
+                    showCustomAlert(result.message, 'error');
+                }
+            });
+        }
+
+        async function updateProject() {
+            const name = document.getElementById('editName').value;
+            const desc = document.getElementById('editDesc').value;
+
+            const res = await fetch(`/projects/${projectId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description: desc })
+            });
+
+            if (res.ok) {
+                showCustomAlert("Project updated successfully!", "success");
+            } else {
+                showCustomAlert("Error updating project.", "error");
+            }
+        }
+
+        document.getElementById('updateNameBtn').addEventListener('click', updateProject);
+        document.getElementById('updateDescBtn').addEventListener('click', updateProject);
+
+        document.getElementById('deleteProjectBtn').addEventListener('click', () => {
+            showCustomConfirm('Delete Project?', 'Are you sure you want to permanently delete this project? This action cannot be undone.', async () => {
+                await fetch(`/projects/${projectId}`, {
+                    method: 'DELETE'
+                });
+
+                window.location.href = '/dashboard';
+            });
+        });
+
+        document.getElementById('addMemberBtn').addEventListener('click', async () => {
+            const username = document.getElementById('memberUsername').value.trim();
+            const isAdmin = document.getElementById('isAdminToggle').checked;
+
+            if (!username) return showCustomAlert("Please enter a username.", "warning");
+
+            const res = await fetch(`/projects/${projectId}/members`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username,
+                    role: isAdmin ? 'admin' : 'viewer'
+                })
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                showCustomAlert(result.message, "success");
+                document.getElementById('memberUsername').value = '';
+                loadEditMembers();
+            } else {
+                showCustomAlert(result.message, "error");
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/sessions', {
+                method: 'DELETE'
+            });
+
+            window.location.href = '/login';
+        });
+
+        init();
+    </script>
+</body>
+</html>

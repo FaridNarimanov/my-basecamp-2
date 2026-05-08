@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="edit-profile-page">
+    <div class="profile-container">
+        
+        <div class="top-navbar">
+            <a href="/dashboard">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Dashboard
+            </a>
+            <button id="logoutBtn" class="logout-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Logout
+            </button>
+        </div>
+
+        <div id="msgBox" class="message-box"></div>
+
+        <div class="profile-header">
+            <h1>Edit Profile</h1>
+        </div>
+
+        <div class="avatar-section">
+            <img id="avatarImage" class="avatar-preview" src="" alt="Profile Picture">
+            <input type="file" id="avatarInput" accept="image/*">
+            <button class="avatar-upload-btn" onclick="document.getElementById('avatarInput').click()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Change Picture
+            </button>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="profileName">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="profileUsername">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="profileEmail">
+        </div>
+
+        <div class="security-section">
+            <h3>Password & Security</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <div class="pwd-input-wrapper">
+                        <input type="password" id="oldPassword" placeholder="Enter current password">
+                        <span class="eye-icon" onclick="togglePwd('oldPassword')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+                    </div>
+                </div>
+                <div class="form-group"></div> 
+            </div>
+
+            <div class="form-row form-row-tight">
+                <div class="form-group">
+                    <label>New Password</label>
+                    <div class="pwd-input-wrapper">
+                        <input type="password" id="newPassword" placeholder="New Password">
+                        <span class="eye-icon" onclick="togglePwd('newPassword')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <div class="pwd-input-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+                        <span class="eye-icon" onclick="togglePwd('confirmPassword')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="saveProfileBtn" class="btn-save">Save Profile Changes</button>
+    </div>
+
+    <script>
+        const msgBox = document.getElementById('msgBox');
+
+        function showMessage(text, isError = false) {
+            msgBox.textContent = text;
+            msgBox.className = 'message-box ' + (isError ? 'error' : 'success');
+            msgBox.classList.add('is-visible');
+            setTimeout(() => msgBox.classList.remove('is-visible'), 4000);
+        }
+
+        function togglePwd(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2JkYzNjNyI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';
+
+        async function loadProfile() {
+            try {
+                const res = await fetch('/profile');
+                if (!res.ok) throw new Error();
+                const user = await res.json();
+                
+                document.getElementById('profileName').value = user.name || '';
+                document.getElementById('profileEmail').value = user.email || '';
+                document.getElementById('profileUsername').value = user.username || '';
+                
+                const avatarImg = document.getElementById('avatarImage');
+                avatarImg.src = user.profile_pic ? user.profile_pic : defaultAvatar;
+            } catch (error) {
+                alert('Could not load profile.');
+                window.location.href = '/dashboard';
+            }
+        }
+
+        document.getElementById('avatarInput').addEventListener('change', async function() {
+            if (!this.files[0]) return;
+            const formData = new FormData();
+            formData.append('avatar', this.files[0]);
+
+            try {
+                const res = await fetch('/profile/picture', { method: 'POST', body: formData });
+                const result = await res.json();
+                if (res.ok) {
+                    document.getElementById('avatarImage').src = result.filePath;
+                    showMessage('Profile picture updated successfully!');
+                } else {
+                    showMessage(result.message, true);
+                }
+            } catch (err) {
+                showMessage('Error uploading picture', true);
+            }
+        });
+
+        document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+            const name = document.getElementById('profileName').value.trim();
+            const email = document.getElementById('profileEmail').value.trim();
+            const username = document.getElementById('profileUsername').value.trim();
+            
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!name || !email || !username) return showMessage('Name, Username, and Email are required.', true);
+
+            if (newPassword) {
+                if (!oldPassword) return showMessage('You must enter your current password to set a new one.', true);
+                if (newPassword !== confirmPassword) return showMessage('New passwords do not match!', true);
+            }
+
+            const res = await fetch('/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, username, oldPassword, newPassword })
+            });
+            
+            const result = await res.json();
+            if (res.ok) {
+                showMessage(result.message);
+                document.getElementById('oldPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } else {
+                showMessage(result.message, true);
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/sessions', { method: 'DELETE' });
+            window.location.href = '/login';
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>

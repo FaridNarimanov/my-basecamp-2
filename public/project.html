@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Details</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="project-page">
+    <div class="top-navbar">
+        <a href="/dashboard" class="back-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Dashboard
+        </a>
+        <div class="nav-actions">
+            <a href="/edit_profile" class="project-nav-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Profile
+            </a>
+            <button id="logoutBtn" class="project-logout-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <div class="project-header-container">
+        <h1 id="projectName">Loading...</h1>
+        <p id="projectDesc"></p>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <button id="manageProjectBtn" class="sidebar-btn edit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Manage Project
+            </button>
+            <button class="sidebar-btn" data-scroll-target="discussionsSection">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg>
+                Discussions
+            </button>
+            <button class="sidebar-btn" data-scroll-target="threadsSection">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v9l-4-4H9a2 2 0 0 1-2-2v-1"></path><path d="M15 3H5a2 2 0 0 0-2 2v9l4-4h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path></svg>
+                Threads
+            </button>
+            <button class="sidebar-btn" data-scroll-target="tasksSection">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                Tasks
+            </button>
+            <button class="sidebar-btn" data-scroll-target="membersSection">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Members
+            </button>
+            <button class="sidebar-btn" data-scroll-target="attachmentsSection">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                Attachments
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="section-box" id="discussionsSection">
+                <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg> Discussions</h3>
+                <div class="input-row">
+                    <input type="text" id="newDiscussion" placeholder="Type a message...">
+                    <button id="btnDiscussion" class="btn-action-btn">Send</button>
+                </div>
+                <div id="discussionsList" class="list-min-height list-space-lg"></div>
+            </div>
+
+            <div class="section-box" id="threadsSection">
+                <div class="section-heading-row">
+                    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v9l-4-4H9a2 2 0 0 1-2-2v-1"></path><path d="M15 3H5a2 2 0 0 0-2 2v9l4-4h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path></svg> Threads</h3>
+                    <button id="newThreadBtn" class="btn-action-btn thread-create-btn">New Thread</button>
+                </div>
+                <div class="threads-layout">
+                    <div id="threadsList" class="threads-list"></div>
+                    <div class="thread-detail-panel">
+                        <div id="selectedThreadHeader" class="thread-detail-header"></div>
+                        <div id="messagesList" class="messages-list"></div>
+                        <div id="messageComposer" class="message-composer">
+                            <textarea id="newMessageContent" placeholder="Write a message..."></textarea>
+                            <button id="btnMessage" class="btn-action-btn">Post Message</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-box" id="tasksSection">
+                <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> Tasks</h3>
+                <div class="input-row">
+                    <input type="text" id="newTask" placeholder="What needs to be done?">
+                    <button id="btnTask" class="btn-action-btn">Add Task</button>
+                </div>
+                <div id="tasksList" class="list-space-lg"></div>
+            </div>
+
+            <div class="section-box" id="membersSection">
+                <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Project Members</h3>
+                <div id="membersList" class="list-space-md"></div>
+            </div>
+
+            <div class="section-box" id="attachmentsSection">
+                <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> Attachments</h3>
+                <div class="input-row attachment-dropzone">
+                    <div class="attachment-input-wrap">
+                        <input type="file" id="newAttachment" class="file-input-hidden" accept=".png,.jpg,.jpeg,.pdf,.txt">
+                        <label for="newAttachment" class="file-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                            Choose File
+                        </label>
+                        <span id="fileNameDisplay" class="file-name-display">No file chosen</span>
+                    </div>
+                    <button id="btnAttachment" class="btn-action-btn btn-upload">Upload</button>
+                </div>
+                <p class="upload-hint">Accepted formats: PNG, JPG/JPEG, PDF, TXT. Max size: 5MB.</p>
+                <div id="attachmentsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="threadModal" class="custom-modal">
+        <div class="custom-modal-content modal-form-content">
+            <h3 id="threadModalTitle" class="modal-form-title">New Thread</h3>
+            <div class="modal-field">
+                <label for="threadTitleInput" class="modal-label">Title</label>
+                <input type="text" id="threadTitleInput" class="modal-input" maxlength="120">
+            </div>
+            <div class="modal-actions">
+                <button id="cancelThreadBtn" class="filter-btn modal-action-btn">Cancel</button>
+                <button id="saveThreadBtn" class="modal-save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editMessageModal" class="custom-modal">
+        <div class="custom-modal-content modal-form-content">
+            <h3 class="modal-form-title">Edit Message</h3>
+            <div class="modal-field modal-field-large">
+                <label for="editMessageInput" class="modal-label">Message</label>
+                <textarea id="editMessageInput" class="modal-textarea" maxlength="2000"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelEditMessageBtn" class="filter-btn modal-action-btn">Cancel</button>
+                <button id="saveEditMessageBtn" class="modal-save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmActionModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <svg class="modal-icon" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <h3 id="confirmActionTitle">Delete?</h3>
+            <p id="confirmActionMessage">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancelConfirmActionBtn" class="filter-btn modal-action-btn">Cancel</button>
+                <button id="confirmActionBtn" class="modal-danger-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteAttachmentModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <svg class="modal-icon" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <h3>Delete File?</h3>
+            <p>Are you sure you want to delete this file? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancelFileDeleteBtn" class="filter-btn modal-action-btn">Cancel</button>
+                <button id="confirmFileDeleteBtn" class="modal-danger-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customAlertModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <svg id="alertIcon" class="modal-icon" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <h3 id="alertTitle">Alert</h3>
+            <p id="alertMessage">Message goes here.</p>
+            <button id="closeAlertBtn" class="modal-primary-btn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+        const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2JkYzNjNyI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';
+
+        let fileToDeleteId = null;
+        let selectedThreadId = null;
+        let canManageThreads = false;
+        let currentThreadMode = 'create';
+        let editingThreadId = null;
+        let editingMessageId = null;
+        let confirmAction = null;
+
+        function createElement(tag, options = {}, children = []) {
+            const node = document.createElement(tag);
+            if (options.className) node.className = options.className;
+            if (options.text !== undefined) node.textContent = options.text;
+            if (options.attrs) {
+                Object.entries(options.attrs).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined) node.setAttribute(key, value);
+                });
+            }
+            if (options.on) {
+                Object.entries(options.on).forEach(([event, handler]) => node.addEventListener(event, handler));
+            }
+            children.forEach((child) => node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child));
+            return node;
+        }
+
+        function clearAndSetEmpty(container, message) {
+            container.replaceChildren(createElement('p', { className: 'empty-message', text: message }));
+        }
+
+        async function fetchJson(url, options = {}) {
+            const response = await fetch(url, options);
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (error) {
+                data = {};
+            }
+            if (!response.ok) {
+                throw new Error(data.message || 'Request failed.');
+            }
+            return data;
+        }
+
+        function showCustomAlert(message, type = 'error', callback = null) {
+            const modal = document.getElementById('customAlertModal');
+            const msgEl = document.getElementById('alertMessage');
+            const iconEl = document.getElementById('alertIcon');
+            const titleEl = document.getElementById('alertTitle');
+            const btn = document.getElementById('closeAlertBtn');
+
+            msgEl.textContent = message;
+            btn.classList.remove('alert-btn-error', 'alert-btn-warning', 'alert-btn-success');
+
+            if (type === 'error') {
+                titleEl.textContent = 'Error';
+                iconEl.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+                iconEl.setAttribute('stroke', 'var(--danger)');
+                btn.classList.add('alert-btn-error');
+            } else if (type === 'warning') {
+                titleEl.textContent = 'Warning';
+                iconEl.innerHTML = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>';
+                iconEl.setAttribute('stroke', 'var(--warning)');
+                btn.classList.add('alert-btn-warning');
+            } else {
+                titleEl.textContent = 'Success';
+                iconEl.innerHTML = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>';
+                iconEl.setAttribute('stroke', 'var(--success)');
+                btn.classList.add('alert-btn-success');
+            }
+
+            modal.style.display = 'flex';
+            btn.onclick = () => {
+                modal.style.display = 'none';
+                if (callback) callback();
+            };
+        }
+
+        function timeSince(dateString) {
+            if (!dateString) return 'Just now';
+            const date = new Date(dateString.endsWith('Z') ? dateString : dateString + 'Z');
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'Just now';
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + ' y ago';
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + ' mo ago';
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + ' d ago';
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + ' h ago';
+            interval = seconds / 60;
+            return Math.floor(interval) + ' m ago';
+        }
+
+        function profileUrl(username) {
+            return username ? `/user_profile?username=${encodeURIComponent(username)}` : '#';
+        }
+
+        function renderProfileLine(user, timestamp) {
+            const link = createElement('a', { className: 'profile-link-small', attrs: { href: profileUrl(user.username) } });
+            const img = createElement('img', { className: 'avatar-small', attrs: { src: user.profile_pic || defaultAvatar, alt: 'Avatar' } });
+            link.appendChild(img);
+
+            const nameLink = createElement('a', {
+                className: 'profile-name-link',
+                text: user.username || user.user_name || user.name || 'User',
+                attrs: { href: profileUrl(user.username) }
+            });
+            const time = createElement('span', { className: 'time-ago', text: '- ' + timeSince(timestamp) });
+            const meta = createElement('div', { className: 'chat-meta' }, [nameLink, time]);
+            return { link, meta };
+        }
+
+        async function init() {
+            if (!projectId) {
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            document.getElementById('manageProjectBtn').addEventListener('click', () => {
+                window.location.href = '/edit_project?id=' + encodeURIComponent(projectId);
+            });
+            document.querySelectorAll('[data-scroll-target]').forEach((btn) => {
+                btn.addEventListener('click', () => document.getElementById(btn.dataset.scrollTarget).scrollIntoView({ behavior: 'smooth' }));
+            });
+
+            await loadProjectDetails();
+            await Promise.all([loadDiscussions(), loadTasks(), loadMembers(), loadAttachments(), loadThreads()]);
+        }
+
+        async function loadProjectDetails() {
+            try {
+                const project = await fetchJson(`/projects/${projectId}`);
+                document.getElementById('projectName').textContent = project.name;
+                document.getElementById('projectDesc').textContent = project.description || 'No description provided.';
+            } catch (error) {
+                showCustomAlert('Project not found!', 'error', () => { window.location.href = '/dashboard'; });
+            }
+        }
+
+        async function loadDiscussions() {
+            const list = document.getElementById('discussionsList');
+            try {
+                const discussions = await fetchJson(`/projects/${projectId}/discussions`);
+                if (discussions.length === 0) {
+                    clearAndSetEmpty(list, 'No discussions yet.');
+                    return;
+                }
+
+                const items = discussions.map((discussion) => {
+                    const profile = renderProfileLine(discussion, discussion.created_at);
+                    const body = createElement('div', { className: 'chat-body' }, [
+                        profile.meta,
+                        createElement('div', { className: 'chat-content', text: discussion.content })
+                    ]);
+                    return createElement('div', { className: 'chat-msg chat-msg-layout' }, [profile.link, body]);
+                });
+                list.replaceChildren(...items);
+            } catch (error) {
+                clearAndSetEmpty(list, error.message);
+            }
+        }
+
+        document.getElementById('btnDiscussion').addEventListener('click', async () => {
+            const input = document.getElementById('newDiscussion');
+            if (!input.value.trim()) return;
+            try {
+                await fetchJson(`/projects/${projectId}/discussions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input.value })
+                });
+                input.value = '';
+                await loadDiscussions();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        async function loadThreads() {
+            const list = document.getElementById('threadsList');
+            const createBtn = document.getElementById('newThreadBtn');
+
+            try {
+                const data = await fetchJson(`/projects/${projectId}/threads`);
+                canManageThreads = data.can_manage;
+                createBtn.hidden = !canManageThreads;
+
+                if (data.threads.length === 0) {
+                    selectedThreadId = null;
+                    clearAndSetEmpty(list, canManageThreads ? 'No threads yet. Start the first one.' : 'No threads yet.');
+                    renderSelectedThread(null);
+                    return;
+                }
+
+                if (!selectedThreadId || !data.threads.some((thread) => thread.id === selectedThreadId)) {
+                    selectedThreadId = data.threads[0].id;
+                }
+
+                const items = data.threads.map((thread) => renderThreadCard(thread));
+                list.replaceChildren(...items);
+                const selected = data.threads.find((thread) => thread.id === selectedThreadId);
+                renderSelectedThread(selected);
+                await loadMessages(selectedThreadId);
+            } catch (error) {
+                clearAndSetEmpty(list, error.message);
+                renderSelectedThread(null);
+            }
+        }
+
+        function renderThreadCard(thread) {
+            const card = createElement('button', {
+                className: 'thread-card' + (thread.id === selectedThreadId ? ' active' : ''),
+                on: { click: () => selectThread(thread.id) }
+            });
+
+            const title = createElement('span', { className: 'thread-title', text: thread.title });
+            const meta = createElement('span', {
+                className: 'thread-meta',
+                text: `${thread.message_count || 0} messages - by ${thread.creator_username || thread.creator_name || 'User'}`
+            });
+            const text = createElement('span', { className: 'thread-card-text' }, [title, meta]);
+            card.appendChild(text);
+
+            if (canManageThreads) {
+                const actions = createElement('span', { className: 'thread-card-actions' });
+                const editBtn = createElement('span', {
+                    className: 'mini-action-btn',
+                    text: 'Edit',
+                    on: {
+                        click: (event) => {
+                            event.stopPropagation();
+                            openThreadModal('edit', thread);
+                        }
+                    }
+                });
+                const deleteBtn = createElement('span', {
+                    className: 'mini-action-btn danger',
+                    text: 'Delete',
+                    on: {
+                        click: (event) => {
+                            event.stopPropagation();
+                            confirmThreadDelete(thread.id);
+                        }
+                    }
+                });
+                actions.append(editBtn, deleteBtn);
+                card.appendChild(actions);
+            }
+
+            return card;
+        }
+
+        function renderSelectedThread(thread) {
+            const header = document.getElementById('selectedThreadHeader');
+            const messagesList = document.getElementById('messagesList');
+            const composer = document.getElementById('messageComposer');
+
+            if (!thread) {
+                header.replaceChildren(createElement('h4', { text: 'Select a thread' }));
+                clearAndSetEmpty(messagesList, 'Messages will appear here.');
+                composer.hidden = true;
+                return;
+            }
+
+            composer.hidden = false;
+            header.replaceChildren(
+                createElement('h4', { text: thread.title }),
+                createElement('span', { className: 'thread-detail-meta', text: `Updated ${timeSince(thread.updated_at || thread.created_at)}` })
+            );
+        }
+
+        async function selectThread(threadId) {
+            selectedThreadId = threadId;
+            await loadThreads();
+        }
+
+        function openThreadModal(mode, thread = null) {
+            currentThreadMode = mode;
+            editingThreadId = thread ? thread.id : null;
+            document.getElementById('threadModalTitle').textContent = mode === 'create' ? 'New Thread' : 'Edit Thread';
+            document.getElementById('threadTitleInput').value = thread ? thread.title : '';
+            document.getElementById('threadModal').style.display = 'flex';
+            document.getElementById('threadTitleInput').focus();
+        }
+
+        document.getElementById('newThreadBtn').addEventListener('click', () => openThreadModal('create'));
+        document.getElementById('cancelThreadBtn').addEventListener('click', () => {
+            document.getElementById('threadModal').style.display = 'none';
+        });
+        document.getElementById('saveThreadBtn').addEventListener('click', async () => {
+            const input = document.getElementById('threadTitleInput');
+            const title = input.value.trim();
+            if (!title) return showCustomAlert('Thread title is required.', 'warning');
+
+            try {
+                if (currentThreadMode === 'edit' && editingThreadId) {
+                    await fetchJson(`/threads/${editingThreadId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title })
+                    });
+                } else {
+                    const data = await fetchJson(`/projects/${projectId}/threads`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title })
+                    });
+                    selectedThreadId = data.id;
+                }
+                document.getElementById('threadModal').style.display = 'none';
+                await loadThreads();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        function confirmThreadDelete(threadId) {
+            openConfirmModal('Delete Thread?', 'Deleting this thread also deletes all messages inside it.', async () => {
+                await fetchJson(`/threads/${threadId}`, { method: 'DELETE' });
+                if (selectedThreadId === threadId) selectedThreadId = null;
+                await loadThreads();
+            });
+        }
+
+        async function loadMessages(threadId) {
+            const list = document.getElementById('messagesList');
+            if (!threadId) return;
+
+            try {
+                const data = await fetchJson(`/threads/${threadId}/messages`);
+                if (data.messages.length === 0) {
+                    clearAndSetEmpty(list, 'No messages in this thread yet.');
+                    return;
+                }
+
+                const items = data.messages.map((message) => renderMessage(message, data.current_user_id, data.can_manage));
+                list.replaceChildren(...items);
+            } catch (error) {
+                clearAndSetEmpty(list, error.message);
+            }
+        }
+
+        function renderMessage(message, currentUserId, canManage) {
+            const profile = renderProfileLine(message, message.created_at);
+            const content = createElement('div', { className: 'chat-content', text: message.content });
+            const bodyChildren = [profile.meta, content];
+
+            if (message.updated_at && message.updated_at !== message.created_at) {
+                bodyChildren.push(createElement('div', { className: 'message-edited', text: 'Edited ' + timeSince(message.updated_at) }));
+            }
+
+            const canChange = message.user_id === currentUserId || canManage;
+            if (canChange) {
+                const actions = createElement('div', { className: 'message-actions' }, [
+                    createElement('button', {
+                        className: 'mini-action-btn',
+                        text: 'Edit',
+                        on: { click: () => openMessageEditModal(message) }
+                    }),
+                    createElement('button', {
+                        className: 'mini-action-btn danger',
+                        text: 'Delete',
+                        on: { click: () => confirmMessageDelete(message.id) }
+                    })
+                ]);
+                bodyChildren.push(actions);
+            }
+
+            return createElement('div', { className: 'chat-msg chat-msg-layout message-card' }, [
+                profile.link,
+                createElement('div', { className: 'chat-body' }, bodyChildren)
+            ]);
+        }
+
+        document.getElementById('btnMessage').addEventListener('click', async () => {
+            const input = document.getElementById('newMessageContent');
+            if (!selectedThreadId) return showCustomAlert('Select a thread first.', 'warning');
+            if (!input.value.trim()) return;
+
+            try {
+                await fetchJson(`/threads/${selectedThreadId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input.value })
+                });
+                input.value = '';
+                await loadThreads();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        function openMessageEditModal(message) {
+            editingMessageId = message.id;
+            document.getElementById('editMessageInput').value = message.content;
+            document.getElementById('editMessageModal').style.display = 'flex';
+            document.getElementById('editMessageInput').focus();
+        }
+
+        document.getElementById('cancelEditMessageBtn').addEventListener('click', () => {
+            document.getElementById('editMessageModal').style.display = 'none';
+            editingMessageId = null;
+        });
+        document.getElementById('saveEditMessageBtn').addEventListener('click', async () => {
+            const input = document.getElementById('editMessageInput');
+            if (!editingMessageId || !input.value.trim()) return;
+
+            try {
+                await fetchJson(`/messages/${editingMessageId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input.value })
+                });
+                document.getElementById('editMessageModal').style.display = 'none';
+                editingMessageId = null;
+                await loadMessages(selectedThreadId);
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        function confirmMessageDelete(messageId) {
+            openConfirmModal('Delete Message?', 'This message will be permanently removed.', async () => {
+                await fetchJson(`/messages/${messageId}`, { method: 'DELETE' });
+                await loadMessages(selectedThreadId);
+            });
+        }
+
+        function openConfirmModal(title, message, action) {
+            document.getElementById('confirmActionTitle').textContent = title;
+            document.getElementById('confirmActionMessage').textContent = message;
+            confirmAction = action;
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        document.getElementById('cancelConfirmActionBtn').addEventListener('click', () => {
+            document.getElementById('confirmActionModal').style.display = 'none';
+            confirmAction = null;
+        });
+        document.getElementById('confirmActionBtn').addEventListener('click', async () => {
+            if (!confirmAction) return;
+            try {
+                const action = confirmAction;
+                confirmAction = null;
+                document.getElementById('confirmActionModal').style.display = 'none';
+                await action();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        async function toggleTask(taskId, isCompleted) {
+            try {
+                await fetchJson(`/tasks/${taskId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_completed: isCompleted })
+                });
+                await loadTasks();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        }
+
+        async function loadTasks() {
+            const list = document.getElementById('tasksList');
+            try {
+                const tasks = await fetchJson(`/projects/${projectId}/tasks`);
+                if (tasks.length === 0) {
+                    clearAndSetEmpty(list, 'No tasks assigned.');
+                    return;
+                }
+
+                const items = tasks.map((task) => {
+                    const checkbox = createElement('input', {
+                        attrs: { type: 'checkbox' },
+                        on: { change: (event) => toggleTask(task.id, event.target.checked) }
+                    });
+                    checkbox.checked = Boolean(task.is_completed);
+                    return createElement('div', { className: 'task-item' }, [
+                        checkbox,
+                        createElement('span', { className: task.is_completed ? 'done' : '', text: task.content })
+                    ]);
+                });
+                list.replaceChildren(...items);
+            } catch (error) {
+                clearAndSetEmpty(list, error.message);
+            }
+        }
+
+        document.getElementById('btnTask').addEventListener('click', async () => {
+            const input = document.getElementById('newTask');
+            if (!input.value.trim()) return;
+            try {
+                await fetchJson(`/projects/${projectId}/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input.value })
+                });
+                input.value = '';
+                await loadTasks();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        async function loadMembers() {
+            const list = document.getElementById('membersList');
+            try {
+                const members = await fetchJson(`/projects/${projectId}/members`);
+                if (members.length === 0) {
+                    clearAndSetEmpty(list, 'No members yet.');
+                    return;
+                }
+
+                const items = members.map((member) => {
+                    let roleClass = 'role-viewer';
+                    if (member.role === 'Owner') roleClass = 'role-owner';
+                    else if (member.role === 'admin') roleClass = 'role-admin';
+
+                    const link = createElement('a', {
+                        className: 'profile-link-block',
+                        attrs: { href: profileUrl(member.username) }
+                    });
+                    const avatar = createElement('img', { className: 'avatar-small', attrs: { src: member.profile_pic || defaultAvatar, alt: 'Avatar' } });
+                    const item = createElement('div', { className: 'member-item' }, [
+                        createElement('div', { className: 'member-info-row' }, [
+                            avatar,
+                            createElement('span', { className: 'member-name', text: member.username || member.name || 'User' })
+                        ]),
+                        createElement('span', { className: `member-role ${roleClass}`, text: member.role })
+                    ]);
+                    link.appendChild(item);
+                    return link;
+                });
+                list.replaceChildren(...items);
+            } catch (error) {
+                clearAndSetEmpty(list, error.message);
+            }
+        }
+
+        document.getElementById('newAttachment').addEventListener('change', function() {
+            const display = document.getElementById('fileNameDisplay');
+            if (this.files && this.files.length > 0) {
+                display.textContent = this.files[0].name;
+                display.classList.add('has-file');
+            } else {
+                display.textContent = 'No file chosen';
+                display.classList.remove('has-file');
+            }
+        });
+
+        function formatAttachmentType(fileType, fileName) {
+            if (fileType) return fileType;
+            const ext = fileName && fileName.includes('.') ? fileName.split('.').pop().toUpperCase() : 'Unknown';
+            return ext;
+        }
+
+        async function loadAttachments() {
+            const list = document.getElementById('attachmentsList');
+            try {
+                const data = await fetchJson(`/projects/${projectId}/attachments`);
+                if (data.attachments.length === 0) {
+                    clearAndSetEmpty(list, 'No attachments yet.');
+                    return;
+                }
+
+                const items = data.attachments.map((attachment) => renderAttachment(attachment, data.can_delete));
+                list.replaceChildren(...items);
+            } catch (error) {
+                clearAndSetEmpty(list, error.message);
+            }
+        }
+
+        function renderAttachment(attachment, canDelete) {
+            const name = createElement('span', { className: 'member-name attachment-name' }, [
+                createElement('span', { className: 'attachment-icon-text', text: 'File' }),
+                createElement('span', { text: attachment.file_name })
+            ]);
+            const type = createElement('span', { className: 'attachment-type', text: formatAttachmentType(attachment.file_type, attachment.file_name) });
+            const info = createElement('div', { className: 'attachment-info' }, [name, type]);
+            const download = createElement('a', {
+                className: 'icon-btn icon-btn-download',
+                text: 'Download',
+                attrs: { href: attachment.file_path, download: '' }
+            });
+            const actions = createElement('div', { className: 'attachment-actions' }, [download]);
+
+            if (canDelete) {
+                actions.appendChild(createElement('button', {
+                    className: 'icon-btn icon-btn-delete',
+                    text: 'Delete',
+                    on: { click: () => triggerFileDelete(attachment.id) }
+                }));
+            }
+
+            return createElement('div', { className: 'member-item attachment-row attachment-card' }, [info, actions]);
+        }
+
+        function triggerFileDelete(id) {
+            fileToDeleteId = id;
+            document.getElementById('deleteAttachmentModal').style.display = 'flex';
+        }
+
+        document.getElementById('cancelFileDeleteBtn').addEventListener('click', () => {
+            document.getElementById('deleteAttachmentModal').style.display = 'none';
+            fileToDeleteId = null;
+        });
+
+        document.getElementById('confirmFileDeleteBtn').addEventListener('click', async () => {
+            if (!fileToDeleteId) return;
+            try {
+                await fetchJson(`/projects/${projectId}/attachments/${fileToDeleteId}`, { method: 'DELETE' });
+                document.getElementById('deleteAttachmentModal').style.display = 'none';
+                fileToDeleteId = null;
+                await loadAttachments();
+            } catch (error) {
+                document.getElementById('deleteAttachmentModal').style.display = 'none';
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        document.getElementById('btnAttachment').addEventListener('click', async () => {
+            const fileInput = document.getElementById('newAttachment');
+            if (!fileInput.files[0]) return showCustomAlert('Please select a file first.', 'warning');
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                await fetchJson(`/projects/${projectId}/attachments`, { method: 'POST', body: formData });
+                fileInput.value = '';
+                document.getElementById('fileNameDisplay').textContent = 'No file chosen';
+                document.getElementById('fileNameDisplay').classList.remove('has-file');
+                await loadAttachments();
+            } catch (error) {
+                showCustomAlert(error.message, 'error');
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/sessions', { method: 'DELETE' });
+            window.location.href = '/login';
+        });
+
+        init();
+    </script>
+</body>
+</html>

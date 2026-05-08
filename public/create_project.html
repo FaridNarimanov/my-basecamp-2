@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Project – My Basecamp</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="form-page create-project-page">
+    <div class="container form-container">
+        <h2 class="page-title">New Project</h2>
+        <p class="subtitle">Fill in the details to create your workspace</p>
+
+        <div id="msgBox" class="message-box"></div>
+
+        <form id="projectForm">
+            <label for="name">Project Name</label>
+            <input type="text" id="name" placeholder="e.g. Website Redesign" required>
+
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="What is this project about?" required></textarea>
+
+            <div class="btn-row">
+                <button type="button" class="btn-back" onclick="window.location.href='/dashboard'">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-submit">
+                    Create Project
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const msgBox = document.getElementById('msgBox');
+        function showMessage(text, isError = false) {
+            msgBox.textContent = text;
+            msgBox.className = 'message-box ' + (isError ? 'error' : 'success');
+        }
+
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            try {
+                const response = await fetch('/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description })
+                });
+                if (response.ok) {
+                    showMessage('Project created successfully!');
+                    setTimeout(() => window.location.href = '/dashboard', 900);
+                } else {
+                    showMessage('Error creating project.', true);
+                }
+            } catch {
+                showMessage("A system error occurred.", true);
+            }
+        });
+    </script>
+</body>
+</html>

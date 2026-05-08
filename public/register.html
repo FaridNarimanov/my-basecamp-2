@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - My Basecamp</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="form-page register-page">
+    <div class="container form-container">
+        <h2 class="page-title">Register</h2>
+        <p class="subtitle">Create your new account</p>
+
+        <div id="msgBox" class="message-box"></div>
+
+        <form id="registerForm">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="you@example.com" required>
+
+            <label for="username">Username</label>
+            <input type="text" id="username" required pattern="[a-zA-Z0-9_]+" title="Letters, numbers and underscore only">
+            <p class="username-hint">Other users will use this to add you to projects.</p>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Min. 6 characters" required minlength="6">
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <p class="footer-link"><a href="/login">Back to Login</a></p>
+    </div>
+
+    <script>
+        const msgBox = document.getElementById('msgBox');
+        function showMessage(text, isError = false) {
+            msgBox.textContent = text;
+            msgBox.className = 'message-box ' + (isError ? 'error' : 'success');
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, username, password })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showMessage('Account created! Redirecting to login...');
+                    setTimeout(() => window.location.href = '/login', 1200);
+                } else {
+                    showMessage(result.message, true);
+                }
+            } catch {
+                showMessage("A system error occurred.", true);
+            }
+        });
+    </script>
+</body>
+</html>
