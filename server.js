@@ -113,14 +113,18 @@ const getProjectAccess = (projectId, userId) => dbGet(`
     )
 `, [userId, projectId, userId, userId]);
 
-const isProjectAdmin = (access) => access && (access.owner_id === access.current_user_id || access.role === 'admin');
+const isProjectAdmin = (access, userId = null) => {
+    if (!access) return false;
+    const currentUserId = userId || access.current_user_id;
+    return access.owner_id === currentUserId || access.role === 'admin';
+};
 
 const getProjectAccessWithCurrentUser = async (projectId, userId) => {
     const access = await getProjectAccess(projectId, userId);
     if (!access) return null;
     access.current_user_id = userId;
     access.user_role = access.owner_id === userId ? 'owner' : access.role;
-    access.can_manage = access.owner_id === userId || access.role === 'admin';
+    access.can_manage = isProjectAdmin(access, userId);
     return access;
 };
 
@@ -290,10 +294,9 @@ app.put('/projects/:id', requireLogin, requireProjectAccess, (req, res) => {
     `, [req.session.userId, req.params.id], (err, accessInfo) => {
         if (err || !accessInfo) return res.status(404).json({ message: "Project not found" });
 
-        const isOwner = accessInfo.owner_id === req.session.userId;
-        const isAdmin = accessInfo.role === 'admin';
+        const canManageProject = isProjectAdmin(accessInfo, req.session.userId);
 
-        if (!isOwner && !isAdmin) {
+        if (!canManageProject) {
             return res.status(403).json({ message: "Access denied. Only owner and admins can edit project details." });
         }
 
@@ -371,10 +374,9 @@ app.post('/projects/:id/members', requireLogin, requireProjectAccess, (req, res)
         `, [req.session.userId, req.params.id], (err, accessInfo) => {
             if (err || !accessInfo) return res.status(404).json({ message: "Project not found" });
 
-            const isOwner = accessInfo.owner_id === req.session.userId;
-            const isAdmin = accessInfo.my_role === 'admin';
+            const canManageProject = isProjectAdmin({ owner_id: accessInfo.owner_id, role: accessInfo.my_role }, req.session.userId);
 
-            if (!isOwner && !isAdmin) {
+            if (!canManageProject) {
                 return res.status(403).json({ message: "Access denied. Only owner and admins can add members." });
             }
 
@@ -418,10 +420,9 @@ app.delete('/projects/:id/members/:username', requireLogin, requireProjectAccess
         `, [req.session.userId, req.params.id], (err, accessInfo) => {
             if (err || !accessInfo) return res.status(404).json({ message: "Project not found" });
 
-            const isOwner = accessInfo.owner_id === req.session.userId;
-            const isAdmin = accessInfo.role === 'admin';
+            const canManageProject = isProjectAdmin(accessInfo, req.session.userId);
 
-            if (!isOwner && !isAdmin && req.session.userId !== user.id) {
+            if (!canManageProject && req.session.userId !== user.id) {
                 return res.status(403).json({ message: "Only project owner or admins can remove members." });
             }
 
@@ -453,10 +454,9 @@ app.patch('/projects/:id/members/:username/role', requireLogin, requireProjectAc
         `, [req.session.userId, req.params.id], (err, accessInfo) => {
             if (err || !accessInfo) return res.status(404).json({ message: "Project not found" });
 
-            const isOwner = accessInfo.owner_id === req.session.userId;
-            const isAdmin = accessInfo.my_role === 'admin';
+            const canManageProject = isProjectAdmin({ owner_id: accessInfo.owner_id, role: accessInfo.my_role }, req.session.userId);
 
-            if (!isOwner && !isAdmin) {
+            if (!canManageProject) {
                 return res.status(403).json({ message: "Only project owner or admins can change roles." });
             }
 
@@ -543,7 +543,7 @@ app.put('/threads/:threadId', requireLogin, async (req, res) => {
     try {
         const thread = await getThreadAccess(req.params.threadId, req.session.userId);
         if (!thread) return res.status(404).json({ message: "Thread not found." });
-        const canManage = thread.owner_id === req.session.userId || thread.role === 'admin';
+        const canManage = isProjectAdmin(thread, req.session.userId);
         if (!canManage) return res.status(403).json({ message: "Only project owner or admins can edit threads." });
 
         await dbRun("UPDATE threads SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [title.value, req.params.threadId]);
@@ -557,7 +557,7 @@ app.delete('/threads/:threadId', requireLogin, async (req, res) => {
     try {
         const thread = await getThreadAccess(req.params.threadId, req.session.userId);
         if (!thread) return res.status(404).json({ message: "Thread not found." });
-        const canManage = thread.owner_id === req.session.userId || thread.role === 'admin';
+        const canManage = isProjectAdmin(thread, req.session.userId);
         if (!canManage) return res.status(403).json({ message: "Only project owner or admins can delete threads." });
 
         await dbRun("BEGIN TRANSACTION");
@@ -580,7 +580,7 @@ app.get('/threads/:threadId/messages', requireLogin, async (req, res) => {
     try {
         const thread = await getThreadAccess(req.params.threadId, req.session.userId);
         if (!thread) return res.status(404).json({ message: "Thread not found." });
-        const canManage = thread.owner_id === req.session.userId || thread.role === 'admin';
+        const canManage = isProjectAdmin(thread, req.session.userId);
 
         const messages = await dbAll(`
             SELECT m.*, u.name as user_name, u.username, u.profile_pic, u.email as user_email
@@ -624,7 +624,7 @@ app.put('/messages/:messageId', requireLogin, async (req, res) => {
     try {
         const message = await getMessageAccess(req.params.messageId, req.session.userId);
         if (!message) return res.status(404).json({ message: "Message not found." });
-        const canManage = message.owner_id === req.session.userId || message.role === 'admin';
+        const canManage = isProjectAdmin(message, req.session.userId);
         const isAuthor = message.user_id === req.session.userId;
         if (!isAuthor && !canManage) {
             return res.status(403).json({ message: "Only the message author, project owner, or admins can edit this message." });
@@ -642,7 +642,7 @@ app.delete('/messages/:messageId', requireLogin, async (req, res) => {
     try {
         const message = await getMessageAccess(req.params.messageId, req.session.userId);
         if (!message) return res.status(404).json({ message: "Message not found." });
-        const canManage = message.owner_id === req.session.userId || message.role === 'admin';
+        const canManage = isProjectAdmin(message, req.session.userId);
         const isAuthor = message.user_id === req.session.userId;
         if (!isAuthor && !canManage) {
             return res.status(403).json({ message: "Only the message author, project owner, or admins can delete this message." });
@@ -728,10 +728,9 @@ app.delete('/projects/:id/attachments/:attachmentId', requireLogin, requireProje
         `, [req.session.userId, req.params.id]);
         if (!accessInfo) return res.status(404).json({ message: "Not found" });
 
-        const isOwner = accessInfo.owner_id === req.session.userId;
-        const isAdmin = accessInfo.role === 'admin';
+        const canManageProject = isProjectAdmin(accessInfo, req.session.userId);
 
-        if (!isOwner && !isAdmin) {
+        if (!canManageProject) {
             return res.status(403).json({ message: "Only project owner or admins can delete files." });
         }
 
@@ -829,13 +828,16 @@ app.post('/profile/picture', requireLogin, avatarUpload.single('avatar'), (req, 
     });
 });
 
-app.get('/api/users/:username', requireLogin, (req, res) => {
+const sendPublicUserProfile = (req, res) => {
     db.get("SELECT name, username, email, profile_pic, role FROM users WHERE username = ?",
         [req.params.username], (err, user) => {
         if (err || !user) return res.status(404).json({ message: "User not found" });
         res.json(user);
     });
-});
+};
+
+app.get('/api/users/:username', requireLogin, sendPublicUserProfile);
+app.get('/users/:username', requireLogin, sendPublicUserProfile);
 
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {

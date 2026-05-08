@@ -63,7 +63,7 @@ http://localhost:8080
 
 ```text
 server.js                 Express app, routes, SQLite setup, auth, uploads
-basecamp.db               SQLite database
+basecamp.db               Runtime/generated SQLite database, not submitted
 public/
   dashboard.html          Project dashboard
   project.html            Project details, discussions, threads, messages, tasks, members, attachments
@@ -74,8 +74,10 @@ public/
   register.html           Registration page
   create_project.html     Project creation page
   style.css               Shared styling
-  uploads/                Uploaded files
+  uploads/                Runtime/generated uploaded files, not submitted
 ```
+
+Do not commit `node_modules`, `basecamp.db`, `public/uploads`, or `.env`.
 
 ## Database Tables
 
@@ -90,4 +92,4 @@ public/
 
 ## Core Team
 
-- TODO
+- Farid Narimanov
