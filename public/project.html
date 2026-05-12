@@ -68,7 +68,13 @@
 
             <div class="section-box" id="threadsSection">
                 <div class="section-heading-row">
-                    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v9l-4-4H9a2 2 0 0 1-2-2v-1"></path><path d="M15 3H5a2 2 0 0 0-2 2v9l4-4h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path></svg> Threads</h3>
+                    <div>
+                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v9l-4-4H9a2 2 0 0 1-2-2v-1"></path><path d="M15 3H5a2 2 0 0 0-2 2v9l4-4h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path></svg> Threads & Messages</h3>
+                        <div class="bc2-workflow-badges">
+                            <span id="threadCountBadge">0 threads</span>
+                            <span id="messageCountBadge">0 messages</span>
+                        </div>
+                    </div>
                     <button id="newThreadBtn" class="btn-action-btn thread-create-btn">New Thread</button>
                 </div>
                 <div class="threads-layout">
@@ -369,6 +375,9 @@
                 const data = await fetchJson(`/projects/${projectId}/threads`);
                 canManageThreads = data.can_manage;
                 createBtn.hidden = !canManageThreads;
+                const totalMessages = data.threads.reduce((sum, thread) => sum + Number(thread.message_count || 0), 0);
+                document.getElementById('threadCountBadge').textContent = `${data.threads.length} ${data.threads.length === 1 ? 'thread' : 'threads'}`;
+                document.getElementById('messageCountBadge').textContent = `${totalMessages} ${totalMessages === 1 ? 'message' : 'messages'}`;
 
                 if (data.threads.length === 0) {
                     selectedThreadId = null;
@@ -450,7 +459,7 @@
             composer.hidden = false;
             header.replaceChildren(
                 createElement('h4', { text: thread.title }),
-                createElement('span', { className: 'thread-detail-meta', text: `Updated ${timeSince(thread.updated_at || thread.created_at)}` })
+                createElement('span', { className: 'thread-detail-meta', text: `${thread.message_count || 0} messages - Updated ${timeSince(thread.updated_at || thread.created_at)}` })
             );
         }
 

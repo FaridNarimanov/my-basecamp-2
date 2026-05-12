@@ -1005,6 +1005,26 @@ a {
     margin-bottom: 0;
 }
 
+.bc2-workflow-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.bc2-workflow-badges span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #eef2ff;
+    color: #3730a3;
+    border: 1px solid #c7d2fe;
+    font-size: 12px;
+    font-weight: 700;
+}
+
 .thread-create-btn {
     padding: 9px 16px !important;
 }

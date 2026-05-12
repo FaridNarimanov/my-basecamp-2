@@ -1,30 +1,86 @@
 # My Basecamp 2
 
-## Task Description
+## Description
 
-My Basecamp 2 extends the completed My Basecamp 1 project with project attachments, project threads, and threaded messages while keeping the existing Node.js, Express, SQLite, bcrypt, express-session, multer, and plain HTML/CSS/JavaScript stack.
+My Basecamp 2 is a Node.js, Express, SQLite, bcrypt, express-session, multer, and plain HTML/CSS/JavaScript project collaboration app. It preserves the My Basecamp 1 workflow and adds visible Basecamp 2 features for project attachments, project threads, and threaded messages.
+
+The backend is refactored into MVC and uses Sequelize ORM with SQLite. The app is designed to run locally with `node server.js`.
 
 ## Cloud Hosted Link
 
 Cloud link: TODO
 
-## What The App Does
+For cloud deployment, the app should use `process.env.PORT || 8080`.
 
-The app lets users register, log in with email or username, create projects, manage project members, track tasks, post project discussions, upload files, edit profiles, upload profile pictures, and view user profiles.
+## MVC Structure
 
-## Basecamp 2 Features
+```text
+server.js
+config/
+  database.js
+models/
+  User.js
+  Project.js
+  ProjectMember.js
+  Discussion.js
+  Task.js
+  Attachment.js
+  Thread.js
+  Message.js
+  index.js
+controllers/
+routes/
+middleware/
+utils/
+public/
+```
 
-- Attachments: project members can upload multiple files per project. Supported project formats are PNG, JPG/JPEG, PDF, and TXT.
-- Attachment metadata: each attachment stores the cleaned display filename, safe stored path, uploader, MIME type, and creation timestamp.
-- Threads: project owners and project admins can create, edit, and delete project threads.
-- Messages: project members can post messages inside threads.
-- Message moderation: message authors, project owners, and project admins can edit or delete messages.
+`server.js` initializes Express, configures middleware, serves static files, mounts routes, syncs Sequelize, and starts the server.
 
-## Role Permissions
+## ORM
+
+This project uses Sequelize with SQLite. Data is stored in `basecamp.db`.
+
+Models include `User`, `Project`, `ProjectMember`, `Discussion`, `Task`, `Attachment`, `Thread`, and `Message`, with associations for project ownership, memberships, discussions, tasks, attachments, threads, and messages.
+
+## Inherited Basecamp 1 Features
+
+- Register
+- Login with email
+- Login with username
+- Logout
+- Dashboard
+- Create, view, edit, and delete projects
+- Add project members by username
+- Remove project members
+- Change project member role between admin and viewer
+- Project discussions
+- Project tasks and task completion
+- Profile edit
+- Profile picture upload
+- User profile page
+
+## New Basecamp 2 Features
+
+- Attachments inside projects
+- Attachment#create and Attachment#destroy
+- Multiple attachments per project
+- Project members can upload attachments
+- Attachment format/type is stored and displayed
+- Allowed attachment formats: PNG, JPG/JPEG, PDF, TXT
+- Threads inside projects
+- Thread#new, Thread#edit, and Thread#destroy
+- Messages inside threads
+- Message#new, Message#edit, and Message#destroy
+- Dashboard shows thread and message counts
+- Project page makes Threads & Messages a prominent workflow section
+
+## Role And Permission Rules
 
 - Project owner: can edit/delete the project, manage members, create/edit/delete threads, create messages, edit/delete any thread message, upload attachments, and delete attachments.
 - Project admin: can manage members, create/edit/delete threads, create messages, edit/delete any thread message, upload attachments, and delete attachments.
 - Project viewer/member: can view project content, create discussions, update tasks, create messages, and upload attachments.
+- Message author: can edit/delete their own messages.
 - Attachment deletion follows the existing project design: only the project owner or project admins can delete project attachments.
 
 ## Security Protections
@@ -33,13 +89,26 @@ The app lets users register, log in with email or username, create projects, man
 - Passwords are not trimmed before hashing or comparison.
 - Sessions use HTTP-only cookies, sameSite lax, and secure cookies in production.
 - Protected routes require login.
-- Project routes verify owner/member access on the backend.
-- Thread, message, task, and attachment routes check project access to prevent IDOR.
-- Thread create/edit/delete is enforced on the backend for owner/admin only.
-- Message edit/delete is enforced on the backend for message author or owner/admin only.
-- SQL queries use parameterized statements.
-- Project attachment uploads use multer with a 5MB limit, random stored filenames, cleaned original display names, extension and MIME validation, and safe deletion inside `public/uploads`.
-- Dynamic project page content is rendered with DOM methods and `textContent` where practical to reduce XSS risk.
+- Sequelize ORM is used instead of raw sqlite3 route logic.
+- Upload size limit is 5MB.
+- Attachment uploads allow only PNG, JPG/JPEG, PDF, and TXT.
+- Avatar uploads allow only PNG, JPEG/JPG, and WebP.
+- Uploaded files use random safe stored filenames.
+- Original filenames are cleaned before being stored for display.
+- File deletion is restricted to `public/uploads/`.
+- Project, task, attachment, thread, message, and member routes enforce project access to reduce IDOR risk.
+- Dynamic thread, message, and attachment UI uses DOM methods and `textContent` where practical.
+
+## Runtime Files
+
+The following files/folders are generated locally and should not be committed:
+
+- `basecamp.db`
+- `public/uploads/`
+- `node_modules/`
+- `.env`
+
+Project data is stored in the SQLite database file `basecamp.db`. Uploaded files are stored in `public/uploads/`. The database stores attachment metadata and file paths.
 
 ## Installation
 
@@ -59,36 +128,7 @@ Then open:
 http://localhost:8080
 ```
 
-## Project Structure
-
-```text
-server.js                 Express app, routes, SQLite setup, auth, uploads
-basecamp.db               Runtime/generated SQLite database, not submitted
-public/
-  dashboard.html          Project dashboard
-  project.html            Project details, discussions, threads, messages, tasks, members, attachments
-  edit_project.html       Project/member management
-  edit_profile.html       Profile editor
-  user_profile.html       Public user profile
-  login.html              Login page
-  register.html           Registration page
-  create_project.html     Project creation page
-  style.css               Shared styling
-  uploads/                Runtime/generated uploaded files, not submitted
-```
-
-Do not commit `node_modules`, `basecamp.db`, `public/uploads`, or `.env`.
-
-## Database Tables
-
-- `users`: account, login, role, profile, and avatar data.
-- `projects`: project name, description, and owner.
-- `project_members`: project membership and project role.
-- `discussions`: Basecamp 1 project discussion posts.
-- `tasks`: project tasks and completion state.
-- `attachments`: project files with display name, safe file path, uploader, MIME type, and created timestamp.
-- `threads`: Basecamp 2 project threads with title, project, creator, created timestamp, and updated timestamp.
-- `messages`: Basecamp 2 thread messages with thread, author, content, created timestamp, and updated timestamp.
+Cloud platforms should provide `PORT`; the app falls back to `8080` locally.
 
 ## Core Team
 

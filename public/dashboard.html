@@ -163,6 +163,14 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg> 
                                 ${p.discussion_count}
                             </span>
+                            <span title="Threads">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h2a2 2 0 0 1 2 2v9l-4-4H9a2 2 0 0 1-2-2v-1"></path><path d="M15 3H5a2 2 0 0 0-2 2v9l4-4h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path></svg>
+                                ${p.thread_count || 0}
+                            </span>
+                            <span title="Thread Messages">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H8l-5 5V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                ${p.message_count || 0}
+                            </span>
                         </div>
                         ${actionsHtml}
                     </div>
