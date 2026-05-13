@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - My Basecamp</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="dashboard-page admin-page">
+    <div class="container-fluid">
+        <div class="top-navbar">
+            <div class="brand">ADMIN PANEL</div>
+            <div class="nav-actions">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1>Users</h1>
+        </div>
+
+        <div id="adminMessage" class="message-box"></div>
+        <div id="usersList" class="admin-users-list"></div>
+    </div>
+
+    <script>
+        const usersList = document.getElementById('usersList');
+        const adminMessage = document.getElementById('adminMessage');
+        let currentUser = null;
+
+        function showMessage(text, isError = false) {
+            adminMessage.textContent = text;
+            adminMessage.className = 'message-box ' + (isError ? 'error' : 'success');
+            adminMessage.classList.add('is-visible');
+        }
+
+        function createElement(tag, options = {}, children = []) {
+            const node = document.createElement(tag);
+            if (options.className) node.className = options.className;
+            if (options.text !== undefined) node.textContent = options.text;
+            if (options.attrs) {
+                Object.entries(options.attrs).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined) node.setAttribute(key, value);
+                });
+            }
+            if (options.on) {
+                Object.entries(options.on).forEach(([event, handler]) => node.addEventListener(event, handler));
+            }
+            children.forEach((child) => node.appendChild(child));
+            return node;
+        }
+
+        async function fetchJson(url, options = {}) {
+            const response = await fetch(url, options);
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (error) {
+                data = {};
+            }
+            if (!response.ok) throw new Error(data.message || 'Request failed.');
+            return data;
+        }
+
+        async function loadCurrentUser() {
+            currentUser = await fetchJson('/api/me');
+            if (currentUser.role !== 'admin') {
+                window.location.href = '/dashboard';
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const users = await fetchJson('/admin/users');
+                if (users.length === 0) {
+                    usersList.replaceChildren(createElement('p', { className: 'empty-message', text: 'No users found.' }));
+                    return;
+                }
+
+                usersList.replaceChildren(...users.map(renderUser));
+            } catch (error) {
+                showMessage(error.message, true);
+            }
+        }
+
+        function renderUser(user) {
+            const roleClass = user.role === 'admin' ? 'role-admin' : 'role-viewer';
+            const name = createElement('div', { className: 'member-text-stack' }, [
+                createElement('span', { className: 'member-display-name', text: user.username || user.name || 'User' }),
+                createElement('span', { className: 'admin-user-email', text: user.email || '' })
+            ]);
+            const badge = createElement('span', { className: `role-badge ${roleClass}`, text: user.role });
+            const identity = createElement('div', { className: 'member-identity' }, [name, badge]);
+            const actions = createElement('div', { className: 'member-action-buttons' });
+
+            if (user.role === 'admin') {
+                actions.appendChild(createElement('button', {
+                    className: 'member-role-button is-viewer-target',
+                    text: 'Remove Admin',
+                    on: { click: () => removeAdmin(user.id) }
+                }));
+            } else {
+                actions.appendChild(createElement('button', {
+                    className: 'member-role-button is-admin-target',
+                    text: 'Make Admin',
+                    on: { click: () => makeAdmin(user.id) }
+                }));
+            }
+
+            actions.appendChild(createElement('button', {
+                className: 'member-remove-button',
+                text: 'Delete',
+                on: { click: () => deleteUser(user.id) }
+            }));
+
+            return createElement('div', { className: 'member-item-edit admin-user-row' }, [identity, actions]);
+        }
+
+        async function makeAdmin(id) {
+            try {
+                const data = await fetchJson(`/users/${id}/admin`, { method: 'PATCH' });
+                showMessage(data.message);
+                await loadUsers();
+            } catch (error) {
+                showMessage(error.message, true);
+            }
+        }
+
+        async function removeAdmin(id) {
+            try {
+                const data = await fetchJson(`/users/${id}/admin`, { method: 'DELETE' });
+                showMessage(data.message);
+                await loadUsers();
+            } catch (error) {
+                showMessage(error.message, true);
+            }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Delete this user account?')) return;
+            try {
+                const data = await fetchJson(`/users/${id}`, { method: 'DELETE' });
+                showMessage(data.message);
+                if (currentUser && Number(currentUser.id) === Number(id)) {
+                    window.location.href = '/login';
+                    return;
+                }
+                await loadUsers();
+            } catch (error) {
+                showMessage(error.message, true);
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/sessions', { method: 'DELETE' });
+            window.location.href = '/login';
+        });
+
+        async function init() {
+            try {
+                await loadCurrentUser();
+                await loadUsers();
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
