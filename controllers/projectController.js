@@ -1,7 +1,7 @@
-const { sequelize, Project, ProjectMember, Discussion, Task, Attachment, Thread, Message, User } = require('../models');
+const { Project, ProjectMember, Discussion, Thread, Message, User } = require('../models');
 const { requireText } = require('../utils/validation');
 const { getProjectAccess, isProjectAdmin } = require('../middleware/projectAccess');
-const { safeDeleteUpload } = require('../utils/projectCleanup');
+const { destroyProjectWithRelatedData } = require('../utils/projectCleanup');
 
 const countFor = async (Model, where) => Model.count({ where });
 
@@ -103,34 +103,7 @@ const deleteProject = async (req, res) => {
         });
         if (!project) return res.status(404).json({ message: 'Project not found' });
 
-        const attachments = await Attachment.findAll({
-            where: { project_id: req.params.id },
-            attributes: ['file_path']
-        });
-
-        await sequelize.transaction(async (transaction) => {
-            const threads = await Thread.findAll({
-                where: { project_id: req.params.id },
-                attributes: ['id'],
-                transaction
-            });
-            const threadIds = threads.map((thread) => thread.id);
-
-            if (threadIds.length > 0) {
-                await Message.destroy({ where: { thread_id: threadIds }, transaction });
-            }
-
-            await Thread.destroy({ where: { project_id: req.params.id }, transaction });
-            await Attachment.destroy({ where: { project_id: req.params.id }, transaction });
-            await Task.destroy({ where: { project_id: req.params.id }, transaction });
-            await Discussion.destroy({ where: { project_id: req.params.id }, transaction });
-            await ProjectMember.destroy({ where: { project_id: req.params.id }, transaction });
-            await Project.destroy({ where: { id: req.params.id, user_id: req.session.userId }, transaction });
-        });
-
-        for (const attachment of attachments) {
-            await safeDeleteUpload(attachment.file_path);
-        }
+        await destroyProjectWithRelatedData(req.params.id, req.session.userId);
 
         res.json({ message: 'Project deleted successfully' });
     } catch (err) {
