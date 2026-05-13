@@ -15,11 +15,13 @@ const register = async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
+        const adminCount = await User.count({ where: { role: 'admin' } });
         await User.create({
             name: name.value,
             email: email.value,
             username: username.value,
-            password: hashedPassword
+            password: hashedPassword,
+            role: adminCount === 0 ? 'admin' : 'user'
         });
         res.status(201).json({ message: 'User created successfully' });
     } catch (err) {

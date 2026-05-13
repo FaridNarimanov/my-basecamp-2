@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { Attachment } = require('../models');
+const { sequelize, Project, ProjectMember, Discussion, Task, Attachment, Thread, Message } = require('../models');
 
 const uploadDir = path.resolve(__dirname, '..', 'public', 'uploads');
 
@@ -36,9 +36,47 @@ const cleanupProjectUploads = async (projectId) => {
     }
 };
 
+const destroyProjectWithRelatedData = async (projectId, ownerId = null) => {
+    const projectWhere = ownerId ? { id: projectId, user_id: ownerId } : { id: projectId };
+    const project = await Project.findOne({ where: projectWhere });
+    if (!project) return false;
+
+    const attachments = await Attachment.findAll({
+        where: { project_id: projectId },
+        attributes: ['file_path']
+    });
+
+    await sequelize.transaction(async (transaction) => {
+        const threads = await Thread.findAll({
+            where: { project_id: projectId },
+            attributes: ['id'],
+            transaction
+        });
+        const threadIds = threads.map((thread) => thread.id);
+
+        if (threadIds.length > 0) {
+            await Message.destroy({ where: { thread_id: threadIds }, transaction });
+        }
+
+        await Thread.destroy({ where: { project_id: projectId }, transaction });
+        await Attachment.destroy({ where: { project_id: projectId }, transaction });
+        await Task.destroy({ where: { project_id: projectId }, transaction });
+        await Discussion.destroy({ where: { project_id: projectId }, transaction });
+        await ProjectMember.destroy({ where: { project_id: projectId }, transaction });
+        await Project.destroy({ where: projectWhere, transaction });
+    });
+
+    for (const attachment of attachments) {
+        await safeDeleteUpload(attachment.file_path);
+    }
+
+    return true;
+};
+
 module.exports = {
     uploadDir,
     ensureUploadDir,
     safeDeleteUpload,
-    cleanupProjectUploads
+    cleanupProjectUploads,
+    destroyProjectWithRelatedData
 };
