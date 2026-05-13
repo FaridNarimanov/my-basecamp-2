@@ -10,6 +10,9 @@
         <div class="top-navbar">
             <div class="brand">DASHBOARD</div>
             <div class="nav-actions">
+                <a id="adminPanelLink" href="/admin" class="nav-link" hidden>
+                    Admin Panel
+                </a>
                 <a href="/edit_profile" class="nav-link">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     Profile
@@ -87,6 +90,17 @@
         let allProjects = [];
         let currentFilter = 'all';
         let projectToDelete = null; 
+
+        async function loadCurrentUser() {
+            try {
+                const response = await fetch('/api/me');
+                if (!response.ok) return;
+                const user = await response.json();
+                document.getElementById('adminPanelLink').hidden = user.role !== 'admin';
+            } catch (error) {
+                document.getElementById('adminPanelLink').hidden = true;
+            }
+        }
 
         async function loadProjects() {
             try {
@@ -228,6 +242,7 @@
             loadProjects();
         });
 
+        loadCurrentUser();
         loadProjects();
     </script>
 </body>

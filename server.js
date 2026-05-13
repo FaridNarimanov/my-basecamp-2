@@ -10,6 +10,8 @@ const threadRoutes = require('./routes/threadRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const { uploadErrorHandler } = require('./middleware/upload');
+const { requireLogin } = require('./middleware/auth');
+const { requireAdmin } = require('./middleware/admin');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -26,8 +28,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
-
 app.use(session({
     secret: process.env.SESSION_SECRET || 'basecamp_dev_secret_change_in_prod',
     resave: false,
@@ -42,6 +42,12 @@ app.use(session({
 app.get('/', (req, res) => {
     res.redirect('/login');
 });
+
+app.get('/admin', requireLogin, requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 app.use(authRoutes);
 app.use(profileRoutes);
