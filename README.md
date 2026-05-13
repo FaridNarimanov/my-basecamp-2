@@ -46,10 +46,12 @@ Models include `User`, `Project`, `ProjectMember`, `Discussion`, `Task`, `Attach
 ## Inherited Basecamp 1 Features
 
 - Register
+- First registered user becomes a global admin if no global admin exists yet
 - Login with email
 - Login with username
 - Logout
 - Dashboard
+- Global admins can manage users from `/admin`
 - Create, view, edit, and delete projects
 - Add project members by username
 - Remove project members
@@ -77,11 +79,22 @@ Models include `User`, `Project`, `ProjectMember`, `Discussion`, `Task`, `Attach
 
 ## Role And Permission Rules
 
+- Global admin: can open `/admin`, list users, make users global admin, remove global admin access, and delete non-admin users.
+- Global user role and project member role are separate. Global `user.role` is only `user` or `admin`; project membership remains `admin` or `viewer`.
 - Project owner: can edit/delete the project, manage members, create/edit/delete threads, create messages, edit/delete any thread message, upload attachments, and delete attachments.
 - Project admin: can manage members, create/edit/delete threads, create messages, edit/delete any thread message, upload attachments, and delete attachments.
 - Project viewer/member: can view project content, create discussions, update tasks, create messages, and upload attachments.
 - Message author: can edit/delete their own messages.
 - Attachment deletion follows the existing project design: only the project owner or project admins can delete project attachments.
+- The last global admin cannot be demoted or deleted.
+
+## Admin Routes
+
+- `GET /admin/users`
+- `PATCH /users/:id/admin`
+- `DELETE /users/:id/admin`
+- `DELETE /users/:id`
+- `GET /api/me`
 
 ## Security Protections
 
