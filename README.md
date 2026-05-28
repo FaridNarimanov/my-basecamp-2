@@ -46,20 +46,15 @@ The backend is refactored into an MVC-style structure. Database operations are h
 ## New Basecamp 2 Features
 
 - Attachments inside projects
-- `Attachment#create`
-- `Attachment#destroy`
+- Create and delete attachments
 - Multiple attachments per project
 - Attachment format/type storage
 - Attachment format/type display on the project page
 - Allowed attachment formats: PNG, JPG/JPEG, PDF, TXT
 - Project threads
-- `Thread#new`
-- `Thread#edit`
-- `Thread#destroy`
+- Create, edit, and delete project threads
 - Threaded messages
-- `Message#new`
-- `Message#edit`
-- `Message#destroy`
+- Create, edit, and delete messages inside threads
 - Project members can post messages inside threads
 - Dashboard shows thread and message counts
 - Project page highlights the Threads & Messages workflow
